@@ -1,8 +1,5 @@
 # DevBoard — Advanced (UI + Go + Postgres)
 
-This is the same DevBoard UI as the `master` branch, but now the data comes
-from a **real backend** instead of fake in-memory data.
-
 Three pieces talk to each other:
 
 ```
@@ -58,6 +55,12 @@ few minutes. Later builds are much faster.
 
 ### Step 3: Run the database
 
+Create a docker volume to keep data persistent.
+
+```bash
+docker volume create pgdata
+```
+
 We name it `postgres`. The backend will look for it by that exact name. The
 `-v ./init/postgres:...` line loads the example data the first time it starts.
 
@@ -67,6 +70,7 @@ docker run -d --name postgres --network devboard-net \
   -e POSTGRES_PASSWORD=devboard \
   -e POSTGRES_DB=devboard \
   -v "$PWD/init/postgres":/docker-entrypoint-initdb.d:ro \
+  -v pgdata:/var/lib/postgresql/data \
   -p 5432:5432 \
   postgres:16-alpine
 ```
