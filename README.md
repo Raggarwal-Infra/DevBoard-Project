@@ -22,7 +22,7 @@ pieces connect*.
 - **Docker** (with Docker Compose).
 ```bash
 sudo apt-get install -y docker.io docker-compose-v2
-sudo chmod -aG docker $USER
+sudo usermod -aG docker $USER
 newgrp docker
 ```
 
