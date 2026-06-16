@@ -19,9 +19,12 @@ pieces connect*.
 
 ## What you need
 
-- **Docker** (with Docker Compose, which comes with Docker Desktop).
-- That's it. You do **not** need Node, Go, or Postgres installed — they all run
-  inside containers.
+- **Docker** (with Docker Compose).
+```bash
+sudo apt-get install -y docker.io docker-compose-v2
+sudo chmod -aG docker $USER
+newgrp docker
+```
 
 ---
 
@@ -61,7 +64,7 @@ Create a docker volume to keep data persistent.
 docker volume create pgdata
 ```
 
-We name it `postgres`. The backend will look for it by that exact name. The
+We name container as `postgres`. The backend will look for it by that exact name. The
 `-v ./init/postgres:...` line loads the example data the first time it starts.
 
 ```bash
@@ -77,9 +80,14 @@ docker run -d --name postgres --network devboard-net \
 
 ### Step 4: Run the backend
 
-We name it `backend` (the frontend looks for this name). We also tell it how to
-reach the database with `POSTGRES_URL` — notice it uses the name `postgres`.
+We name container as `backend` (the frontend looks for this name). We also tell it how to
+reach the database with `POSTGRES_URL` — notice it uses the name `postgres`. A generic format for POSTGRES_URL is:
+```bash
+-e POSTGRES_URL="postgres://<username>:<password>@<host>:<port>/<database>?<options>"
+```
+`sslmode=disable` allows http connections.
 
+Hence, the command to setup the backend would be:
 ```bash
 docker run -d --name backend --network devboard-net \
   -e PORT=8080 \
@@ -87,6 +95,7 @@ docker run -d --name backend --network devboard-net \
   -p 8081:8080 \
   devboard-backend
 ```
+
 
 ### Step 5: Run the frontend
 
@@ -146,7 +155,11 @@ cp .env.example .env
 Then start everything with one command:
 
 ```bash
-docker compose up --build
+docker compose up --build # Rebuilds the images if Dockerfile has changes.
+```
+or
+```bash
+docker compose up -d # Run services in the background.
 ```
 
 The first build can take a few minutes. When it's done, open
